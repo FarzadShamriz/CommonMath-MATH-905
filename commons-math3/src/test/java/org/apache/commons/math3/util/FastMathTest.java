@@ -33,7 +33,7 @@ import org.junit.Test;
 
 public class FastMathTest {
 
-    private static final double MAX_ERROR_ULP = 0.51;
+	private static final double MAX_ERROR_ULP = 0.51;
     private static final int NUMBER_OF_TRIALS = 1000;
 
 
@@ -155,6 +155,50 @@ public class FastMathTest {
         }
         Assert.assertEquals(0, maxErr, 4);
 
+    }
+
+    @Test
+    public void testMath905LargePositive() {
+        final double start = StrictMath.log(Double.MAX_VALUE);
+        final double endT = StrictMath.sqrt(2) * StrictMath.sqrt(Double.MAX_VALUE);
+        final double end = 2 * StrictMath.log(endT);
+
+        double maxErr = 0;
+        for (double x = start; x < end; x += 1e-3) {
+            final double tst = FastMath.cosh(x);
+            final double ref = Math.cosh(x);
+            maxErr = FastMath.max(maxErr, FastMath.abs(ref - tst) / FastMath.ulp(ref));            
+        }
+        Assert.assertEquals(0, maxErr, 3);
+
+        for (double x = start; x < end; x += 1e-3) {
+            final double tst = FastMath.sinh(x);
+            final double ref = Math.sinh(x);
+            maxErr = FastMath.max(maxErr, FastMath.abs(ref - tst) / FastMath.ulp(ref));            
+        }
+        Assert.assertEquals(0, maxErr, 3);
+    }
+
+    @Test
+    public void testMath905LargeNegative() {
+        final double start = -StrictMath.log(Double.MAX_VALUE);
+        final double endT = StrictMath.sqrt(2) * StrictMath.sqrt(Double.MAX_VALUE);
+        final double end = -2 * StrictMath.log(endT);
+
+        double maxErr = 0;
+        for (double x = start; x > end; x -= 1e-3) {
+            final double tst = FastMath.cosh(x);
+            final double ref = Math.cosh(x);
+            maxErr = FastMath.max(maxErr, FastMath.abs(ref - tst) / FastMath.ulp(ref));            
+        }
+        Assert.assertEquals(0, maxErr, 3);
+
+        for (double x = start; x > end; x -= 1e-3) {
+            final double tst = FastMath.sinh(x);
+            final double ref = Math.sinh(x);
+            maxErr = FastMath.max(maxErr, FastMath.abs(ref - tst) / FastMath.ulp(ref));            
+        }
+        Assert.assertEquals(0, maxErr, 3);
     }
 
     @Test
@@ -1104,5 +1148,19 @@ public class FastMathTest {
         Assert.assertEquals(1.0F, FastMath.copySign(1d, 2.0F), delta);
         Assert.assertEquals(1.0F, FastMath.copySign(1d, 0.0F), delta);
         Assert.assertEquals(-1.0F, FastMath.copySign(1d, -2.0F), delta);
+    }
+
+    @Test
+    public void testIntPow() {
+        final int maxExp = 300;
+        DfpField field = new DfpField(40);
+        final double base = 1.23456789;
+        Dfp baseDfp = field.newDfp(base);
+        Dfp dfpPower = field.getOne();
+        for (int i = 0; i < maxExp; i++) {
+            Assert.assertEquals("exp=" + i, dfpPower.toDouble(), FastMath.pow(base, i),
+                                0.6 * FastMath.ulp(dfpPower.toDouble()));
+            dfpPower = dfpPower.multiply(baseDfp);
+        }
     }
 }
