@@ -35,8 +35,6 @@ public class FastMathTest {
 
 	private static final double MAX_ERROR_ULP = 0.51;
     private static final int NUMBER_OF_TRIALS = 1000;
-
-
     private DfpField field;
     private RandomGenerator generator;
 
