@@ -390,8 +390,13 @@ public class FastMath {
       // for numbers with magnitude 20 or so,
       // exp(-z) can be ignored in comparison with exp(z)
 
-      Double processedX = processLargeNumberCosh(x);
-      if(processedX!=null) return processedX;
+      if (x > 20.0) {
+          return exp(x)/2.0;
+      }
+
+      if (x < -20) {
+          return exp(-x)/2.0;
+      }
 
       double hiPrec[] = new double[2];
       if (x < 0.0) {
@@ -445,8 +450,13 @@ public class FastMath {
       // for values of z larger than about 20,
       // exp(-z) can be ignored in comparison with exp(z)
 
-      Double processedX = processLargeNumberSinh(x);
-      if(processedX!=null) return processedX;
+      if (x > 20.0) {
+          return exp(x)/2.0;
+      }
+
+      if (x < -20) {
+          return -exp(-x)/2.0;
+      }
 
       if (x == 0) {
           return x;
@@ -538,25 +548,6 @@ public class FastMath {
       }
 
       return result;
-    }
-
-    private static double processLargeNumberCosh(double x) {
-    	return processLargeNumberHyperbolic(x, () -> exp(-x));
-    }
-    
-    private static double processLargeNumberSinh(double x) {
-    	return processLargeNumberHyperbolic(x, () -> -exp(-x));
-    }
-    
-    private static Double processLargeNumberHyperbolic(double x,Supplier<Double> arg0) {
-    	if (x > 20.0) {
-            return exp(x)/2.0;
-        }
-
-        if (x < -20) {
-            return arg0.get()/2.0;
-        }
-        return null;
     }
     
     /** Compute the hyperbolic tangent of a number.
