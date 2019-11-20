@@ -433,7 +433,7 @@ public class FastMath {
       result *= 0.5;
       return result;
     }
-
+    
     /** Compute the hyperbolic sine of a number.
      * @param x number on which evaluation is done
      * @return hyperbolic sine of x
